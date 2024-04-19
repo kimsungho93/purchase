@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Ignore Docker compose file
+docker-compose.yml
+docker-compose.override.yml
