@@ -39,3 +39,5 @@ out/
 # Ignore Docker compose file
 docker-compose.yml
 docker-compose.override.yml
+
+application-test.yml
