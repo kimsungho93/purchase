@@ -58,4 +58,5 @@ public record CreateUserRequest(
                 .detailedAddress(detailedAddress)
                 .build();
     }
+
 }

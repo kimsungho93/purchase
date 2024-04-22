@@ -4,7 +4,6 @@ import com.ksh.purchase.entity.Address;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,13 +50,12 @@ public class EncryptService {
         }
     }
 
-    // Generic method to encrypt properties of an entity
     private <T> T encryptEntity(T entity, Function<T, T> encryptFunction) {
         return encryptFunction.apply(entity);
     }
 
-    // Usage for User entity
-    public User encryptUser(User user) {
+    public User
+    encryptUser(User user) {
         return encryptEntity(user, u -> User.builder()
                 .name(encrypt(u.getName()))
                 .email(encrypt(u.getEmail()))
@@ -68,7 +66,6 @@ public class EncryptService {
                 .build());
     }
 
-    // Usage for Address entity
     public Address encryptAddress(Address address) {
         return encryptEntity(address, a -> Address.builder()
                 .zipcode(encrypt(a.getZipcode()))

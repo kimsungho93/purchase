@@ -47,11 +47,11 @@ jasypt:
 
 jwt:
   issuer: ENC(ywPl9PPAn6bBfwfDcQj/4xEzn/6/FIgzeqVYx9204d4=)
-  secretKey: ENC(xD2ZgBasJOxHU5bT3ymjLX7uNQ6vAiWLHRWAxkcJ6fc=)
+  secretKey: cHVyY2hhc2VUb2tlbktleQ==cHVyY2hhc2VUb2tlbktleQ==cHVyY2hhc2VUb2tlbktleQ==
 
 logging:
   level:
-    root: debug
+    root: info
 
 
 
