@@ -1,6 +1,8 @@
 package com.ksh.purchase.service;
 
 import com.ksh.purchase.controller.reqeust.CreateUserRequest;
+import com.ksh.purchase.controller.reqeust.LoginRequest;
+import com.ksh.purchase.controller.response.LoginResponse;
 import com.ksh.purchase.entity.Address;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
@@ -8,6 +10,7 @@ import com.ksh.purchase.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final EncryptService encryptService;
     private final RedisService redisService;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
 
     // 회원가입
@@ -40,6 +45,20 @@ public class UserService {
         return user.getId();
     }
 
+    // 로그인
+    public LoginResponse login(LoginRequest loginRequest) {
+        // 이메일 검증
+        User user = userRepository.findByEmail(encryptService.encrypt(loginRequest.email())).orElseThrow(
+                () -> new CustomException("가입되지 않은 이메일입니다.", HttpStatus.NOT_FOUND)
+        );
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
+            throw new CustomException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+        }
+        // 로그인 성공 시 토큰 발급
+        return new LoginResponse(tokenProvider.generateToken(user));
+    }
+
     @Transactional
     public void verifyEmail(Long id) {
         User user = userRepository.findById(id)
@@ -48,6 +67,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 이메일 중복 체크
     private boolean checkDuplicateEmail(String email) {
         return userRepository.existsByEmail(email);
     }
