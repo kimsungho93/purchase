@@ -36,7 +36,7 @@ public class UserService {
         }
 
         userRepository.save(user);
-        redisService.setValue(String.valueOf(user.getId()), String.valueOf(user.getId()), Duration.ofMinutes(1));
+        redisService.setValue(String.valueOf(user.getId()), String.valueOf(user.getId()), Duration.ofMinutes(2));
         return user.getId();
     }
 
