@@ -10,5 +10,5 @@ COPY ${JAR_FILE} purchase.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "purchase.jar"]
+ENTRYPOINT ["java", "-Djasypt.encryptor.password=ksh",  "-jar", "purchase.jar"]
 

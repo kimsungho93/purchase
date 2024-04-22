@@ -2,9 +2,10 @@ spring:
   config:
     activate:
       on-profile: test
+
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: ENC(aFFg58MqCtqaCutadFb13OcbRWhvGfgOkMx9DRz4nordcx4PWa8wp8hnEn3RzaDGlMEt/NLBbADIrshhW0wW1ntwgyRlbRvC)
     username: sa
     password:
   h2:
@@ -19,3 +20,38 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(ef9tTQ/UVWTjvev42uljjS/pR3A623ssTU5/OC2olxY=)
+    password: ENC(Q03scjSe0+4RIjJ9YNlfFI5mB10fjQ37URBok3nu9iw=)
+    properties:
+      mail:
+        smtp:
+          timeout: 30000 # 30 seconds
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ENC(qQvxvraxgjPwt4vCfL4EfQ==)
+
+jwt:
+  issuer: ENC(ywPl9PPAn6bBfwfDcQj/4xEzn/6/FIgzeqVYx9204d4=)
+  secretKey: ENC(xD2ZgBasJOxHU5bT3ymjLX7uNQ6vAiWLHRWAxkcJ6fc=)
+
+logging:
+  level:
+    root: debug
+
+
+

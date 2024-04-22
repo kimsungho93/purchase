@@ -1,9 +1,12 @@
 spring:
+  config:
+    activate:
+      on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/purchase
-    username: root
-    password: 1234
+    url: ENC(9a7whLyElfz1B3ugATMSHykVXwlpeVveb7gTemrGrUilYn3FqBn1mRIx+j8LmOPB)
+    username: ENC(8nvSizf8ihRKXUui6q/sQQ==)
+    password: ENC(Zlak+FbWHiV/DLMugYjg9A==)
 
   jpa:
     hibernate:
@@ -11,6 +14,11 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ENC(qQvxvraxgjPwt4vCfL4EfQ==)
 
