@@ -46,6 +46,7 @@ public class UserService {
     }
 
     // 로그인
+    @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
         // 이메일 검증
         User user = userRepository.findByEmail(encryptService.encrypt(loginRequest.email())).orElseThrow(
@@ -56,7 +57,15 @@ public class UserService {
             throw new CustomException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
         // 로그인 성공 시 토큰 발급
-        return new LoginResponse(tokenProvider.generateToken(user));
+        String token = tokenProvider.generateToken(user);
+        redisService.setValue(token, "valid", Duration.ofHours(1));
+        return new LoginResponse(token);
+    }
+
+    // 로그아웃
+    @Transactional
+    public void logout(String token) {
+        redisService.deleteValue(token);
     }
 
     @Transactional

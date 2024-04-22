@@ -1,6 +1,7 @@
 package com.ksh.purchase.filter;
 
 import com.ksh.purchase.exception.CustomException;
+import com.ksh.purchase.service.RedisService;
 import com.ksh.purchase.service.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,12 +21,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
+    private final RedisService redisService;
 
     private final static String TOKEN_PREFIX = "Bearer ";
     private static final List<String> openApiEndpoints = List.of(
             "/api/v1/users",                              // 회원가입
             "/api/v1/auth/email/verify",            // 이메일 인증
-            "/api/v1/users/login"                      // 로그인
+            "/api/v1/users/login",                     // 로그인
+            "/h2-console/"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -49,7 +52,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         validateAuthorizationHeader(authorizationHeader);
 
         final String token = extractToken(authorizationHeader);
-        if (tokenProvider.validateToken(token)) {
+        if (tokenProvider.validateToken(token) &&  redisService.hasKey(token)) { // 이 부분 추가
             setAuthentication(token);
         } else {
             throw new CustomException("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);

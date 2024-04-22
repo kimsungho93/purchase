@@ -32,4 +32,13 @@ public class UserController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(userService.login(request));
     }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token) {
+        token = token.substring("Bearer ".length());
+        userService.logout(token);
+        return ResponseEntity.ok().build();
+    }
+
 }

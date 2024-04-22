@@ -1,6 +1,7 @@
 package com.ksh.purchase.config;
 
 import com.ksh.purchase.filter.TokenAuthenticationFilter;
+import com.ksh.purchase.service.RedisService;
 import com.ksh.purchase.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -20,6 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final RedisService redisService;
 
 
     @Bean
@@ -48,7 +51,7 @@ public class SecurityConfig {
 
     @Bean
     TokenAuthenticationFilter tokenAuthenticationFilter(TokenProvider tokenProvider) {
-        return new TokenAuthenticationFilter(tokenProvider);
+        return new TokenAuthenticationFilter(tokenProvider, redisService);
     }
 
 }
