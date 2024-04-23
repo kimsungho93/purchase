@@ -1,6 +1,7 @@
 package com.ksh.purchase.filter;
 
 import com.ksh.purchase.exception.CustomException;
+import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.service.RedisService;
 import com.ksh.purchase.service.TokenProvider;
 import jakarta.servlet.FilterChain;
@@ -8,7 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -28,7 +28,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             "/api/v1/users",                              // 회원가입
             "/api/v1/auth/email/verify",            // 이메일 인증
             "/api/v1/users/login",                     // 로그인
-            "/h2-console/"
+            "/h2-console/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -55,14 +55,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (tokenProvider.validateToken(token) &&  redisService.hasKey(token)) { // 이 부분 추가
             setAuthentication(token);
         } else {
-            throw new CustomException("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
     }
 
     // Authorization 헤더 검증
     private void validateAuthorizationHeader(String authorizationHeader) {
         if (!StringUtils.hasText(authorizationHeader) || !authorizationHeader.startsWith(TOKEN_PREFIX)) {
-            throw new CustomException("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
     }
 

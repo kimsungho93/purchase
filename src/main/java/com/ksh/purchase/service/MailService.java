@@ -1,11 +1,11 @@
 package com.ksh.purchase.service;
 
 import com.ksh.purchase.exception.CustomException;
+import com.ksh.purchase.exception.ErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -38,7 +38,7 @@ public class MailService {
             helper.setText(content);
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new CustomException("메일 전송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorCode.MAIL_SEND_ERROR);
         }
     }
 }

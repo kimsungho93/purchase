@@ -3,8 +3,8 @@ package com.ksh.purchase.service;
 import com.ksh.purchase.entity.Address;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
+import com.ksh.purchase.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,7 @@ public class EncryptService {
             byte[] cipherText = cipher.doFinal(inputData.getBytes());
             return Base64.getEncoder().encodeToString(cipherText);
         } catch (Exception e) {
-            throw new CustomException("Failed to encrypt data", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorCode.ENCRYPTION_FAIL);
         }
     }
 
@@ -46,7 +46,7 @@ public class EncryptService {
             byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
             return new String(plainText);
         } catch (Exception e) {
-            throw new CustomException("Failed to encrypt data", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorCode.DECRYPTION_FAIL);
         }
     }
 

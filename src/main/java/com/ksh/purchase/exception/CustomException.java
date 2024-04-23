@@ -1,15 +1,20 @@
 package com.ksh.purchase.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomException extends RuntimeException {
 
-    @Getter
+    private String message;
     private HttpStatus status;
 
-    public CustomException(String message, HttpStatus status) {
-        super(message);
-        this.status = status;
+    public CustomException(ErrorCode errorCode) {
+        this.message = errorCode.getDescription();
+        this.status = errorCode.getStatus();
     }
 }

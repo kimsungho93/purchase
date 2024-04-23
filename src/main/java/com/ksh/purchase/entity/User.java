@@ -27,6 +27,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
+    @Setter
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -34,6 +35,7 @@ public class User extends BaseEntity {
     private List<Address> addressList = new ArrayList<>();
 
     @Column(nullable = false)
+    @Setter
     private String phone;
 
     @Enumerated(EnumType.STRING)
