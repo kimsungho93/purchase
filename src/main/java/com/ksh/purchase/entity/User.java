@@ -34,6 +34,10 @@ public class User extends BaseEntity {
     @Setter
     private List<Address> addressList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Setter
+    private List<Product> productList = new ArrayList<>();
+
     @Column(nullable = false)
     @Setter
     private String phone;

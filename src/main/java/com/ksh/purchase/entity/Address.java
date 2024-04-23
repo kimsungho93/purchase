@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 public class Address extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id")
+    @Column(name = "address_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
