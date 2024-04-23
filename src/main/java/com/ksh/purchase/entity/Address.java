@@ -24,9 +24,12 @@ public class Address extends BaseEntity{
     private User user;
 
     @Column(nullable = false)
+    @Setter
     private String zipcode;
     @Column(nullable = false)
+    @Setter
     private String address;
+    @Setter
     private String detailedAddress;
 
     public void setUser(User user) {

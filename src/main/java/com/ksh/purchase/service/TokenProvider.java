@@ -29,7 +29,7 @@ public class TokenProvider {
 
     public String generateToken(User user) {
         Date now = new Date();
-        Date expired = new Date(now.getTime() + Duration.ofHours(1).toMillis());
+        Date expired = new Date(now.getTime() + Duration.ofDays(5).toMillis());
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(issuer)
