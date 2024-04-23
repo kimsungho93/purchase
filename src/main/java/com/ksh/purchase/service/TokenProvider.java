@@ -1,6 +1,7 @@
 package com.ksh.purchase.service;
 
 import com.ksh.purchase.entity.User;
+import com.ksh.purchase.util.EncryptionUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -19,8 +20,6 @@ import java.util.Set;
 
 @Service
 public class TokenProvider {
-    @Autowired
-    private EncryptService encryptService;
 
     @Value("${jwt.issuer}")
     private String issuer;
@@ -37,7 +36,7 @@ public class TokenProvider {
                 .setExpiration(expired)
                 .setSubject(user.getId().toString())
                 .claim("id", user.getId())
-                .claim("email", encryptService.decrypt(user.getEmail()))
+                .claim("email", EncryptionUtil.decrypt(user.getEmail()))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }

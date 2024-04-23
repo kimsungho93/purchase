@@ -17,6 +17,8 @@ public enum ErrorCode {
     INVALID_PASSWORD("비밀번호가 일치하지 않습니다.", BAD_REQUEST),
     ADDRESS_NOT_FOUND("주소를 찾을 수 없습니다.", NOT_FOUND),
     UNAUTHORIZED_REQUEST("권한이 없는 사용자입니다.", UNAUTHORIZED),
+    // 상품 관련
+    PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다.", NOT_FOUND),
     // 메일 관련
     MAIL_SEND_ERROR("메일 전송에 실패했습니다.", INTERNAL_SERVER_ERROR),
     //암호화 관련

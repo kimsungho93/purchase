@@ -8,14 +8,16 @@ import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.AddressRepository;
 import com.ksh.purchase.repository.UserRepository;
+import com.ksh.purchase.util.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+
+import static com.ksh.purchase.util.EncryptionUtil.passwordEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
-    private final EncryptService encryptService;
     private final RedisService redisService;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
     // 회원가입
@@ -81,26 +81,26 @@ public class UserService {
 
     // Private helper methods
     private void validateDuplicateEmail(String email) {
-        if (userRepository.existsByEmail(encryptService.encrypt(email))) {
+        if (userRepository.existsByEmail(EncryptionUtil.encrypt(email))) {
             throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
         }
     }
 
     private User saveNewUser(CreateUserRequest request) {
-        User user = encryptService.encryptUser(request.toUserEntity());
+        User user = EncryptionUtil.encryptUser(request.toUserEntity());
         userRepository.save(user);
         redisService.setValue(String.valueOf(user.getId()), String.valueOf(user.getId()), Duration.ofMinutes(2));
         return user;
     }
 
     private void saveNewAddress(User user, CreateUserRequest request) {
-        Address address = encryptService.encryptAddress(request.toAddressEntity(user));
+        Address address = EncryptionUtil.encryptAddress(request.toAddressEntity(user));
         address.setUser(user);
         addressRepository.save(address);
     }
 
     private User validateUserCredentials(String email, String password) {
-        User user = userRepository.findByEmail(encryptService.encrypt(email))
+        User user = userRepository.findByEmail(EncryptionUtil.encrypt(email))
                 .orElseThrow(() -> new CustomException(ErrorCode.MAIL_NOT_FOUND));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
@@ -114,8 +114,8 @@ public class UserService {
     }
 
     private void updatePhone(User user, String phone) {
-        if (!phone.isEmpty() && !phone.equals(encryptService.decrypt(user.getPhone()))) {
-            user.setPhone(encryptService.encrypt(phone));
+        if (!phone.isEmpty() && !phone.equals(EncryptionUtil.decrypt(user.getPhone()))) {
+            user.setPhone(EncryptionUtil.encrypt(phone));
         }
     }
 
@@ -123,13 +123,13 @@ public class UserService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ADDRESS_NOT_FOUND));
         if (!request.zipcode().isEmpty()) {
-            address.setZipcode(encryptService.encrypt(request.zipcode()));
+            address.setZipcode(EncryptionUtil.encrypt(request.zipcode()));
         }
         if (!request.address().isEmpty()) {
-            address.setAddress(encryptService.encrypt(request.address()));
+            address.setAddress(EncryptionUtil.encrypt(request.address()));
         }
         if (!request.detailedAddress().isEmpty()) {
-            address.setDetailedAddress(encryptService.encrypt(request.detailedAddress()));
+            address.setDetailedAddress(EncryptionUtil.encrypt(request.detailedAddress()));
         }
     }
 

@@ -28,7 +28,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             "/api/v1/users",                              // 회원가입
             "/api/v1/auth/email/verify",            // 이메일 인증
             "/api/v1/users/login",                     // 로그인
-            "/h2-console/**"
+            "/h2-console/**",                           // H2 콘솔
+            "/api/v1/products"                         // 상품 목록 조회
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();

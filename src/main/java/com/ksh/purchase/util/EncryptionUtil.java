@@ -1,12 +1,12 @@
-package com.ksh.purchase.service;
+package com.ksh.purchase.util;
 
 import com.ksh.purchase.entity.Address;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -16,16 +16,15 @@ import java.util.Base64;
 import java.util.function.Function;
 
 
-@Service
-@RequiredArgsConstructor
-public class EncryptService {
+@UtilityClass
+public class EncryptionUtil {
 
     private static final String ALGORITHM = "AES";
     private static final byte[] KEY = "ThisIsASecretKey".getBytes();
-    private final PasswordEncoder passwordEncoder;
+    public static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // 데이터 암호화 메소드
-    public String encrypt(String inputData) {
+    public static String encrypt(String inputData) {
         try {
             SecretKey secretKey = new SecretKeySpec(KEY, ALGORITHM);
             Cipher cipher = Cipher.getInstance(ALGORITHM);
@@ -38,7 +37,7 @@ public class EncryptService {
     }
 
     // 데이터 복호화 메소드
-    public String decrypt(String encryptedData) {
+    public static String decrypt(String encryptedData) {
         try {
             SecretKey secretKey = new SecretKeySpec(KEY, ALGORITHM);
             Cipher cipher = Cipher.getInstance(ALGORITHM);
@@ -50,12 +49,11 @@ public class EncryptService {
         }
     }
 
-    private <T> T encryptEntity(T entity, Function<T, T> encryptFunction) {
+    private static <T> T encryptEntity(T entity, Function<T, T> encryptFunction) {
         return encryptFunction.apply(entity);
     }
 
-    public User
-    encryptUser(User user) {
+    public static User encryptUser(User user) {
         return encryptEntity(user, u -> User.builder()
                 .name(encrypt(u.getName()))
                 .email(encrypt(u.getEmail()))
@@ -66,7 +64,7 @@ public class EncryptService {
                 .build());
     }
 
-    public Address encryptAddress(Address address) {
+    public static Address encryptAddress(Address address) {
         return encryptEntity(address, a -> Address.builder()
                 .zipcode(encrypt(a.getZipcode()))
                 .address(encrypt(a.getAddress()))

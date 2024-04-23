@@ -37,6 +37,7 @@ public class SecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/email/verify").permitAll()
                                         .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/api/v1/products").permitAll()
 //                                .requestMatchers("/admins/**").hasAuthority("ADMIN")
                                         .anyRequest().authenticated()
                 )
