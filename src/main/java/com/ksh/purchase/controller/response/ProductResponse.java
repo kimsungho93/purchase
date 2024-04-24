@@ -12,6 +12,7 @@ public class ProductResponse {
     private int price;
     private String description;
     private String userName;
+    private int stock;
     private String status;
 
 
@@ -21,6 +22,7 @@ public class ProductResponse {
                 .price(product.getPrice())
                 .description(product.getDescription())
                 .userName(EncryptionUtil.decrypt(product.getUser().getName()))
+                .stock(product.getStock())
                 .status(product.getStatus().getDescription())
                 .build();
     }
