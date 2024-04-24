@@ -1,12 +1,14 @@
 package com.ksh.purchase.service;
 
+import com.ksh.purchase.controller.reqeust.CreateProductRequest;
 import com.ksh.purchase.controller.response.ProductResponse;
 import com.ksh.purchase.entity.Product;
+import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.ProductRepository;
+import com.ksh.purchase.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+
+    // 상품 등록
+    @Transactional
+    public ProductResponse createProduct(CreateProductRequest request, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Product product = request.toEntity(request, user);
+        product.setUser(user);
+        return ProductResponse.from(productRepository.save(product));
+    }
 
     // 상품 목록 조회
     @Transactional(readOnly = true)

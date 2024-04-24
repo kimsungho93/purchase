@@ -1,8 +1,6 @@
 package com.ksh.purchase.config;
 
 import com.ksh.purchase.filter.TokenAuthenticationFilter;
-import com.ksh.purchase.service.RedisService;
-import com.ksh.purchase.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +9,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,27 +18,26 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private final RedisService redisService;
-
+    private final TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, TokenProvider tokenProvider) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .authorizeHttpRequests((authorizeRequests) ->
-                                authorizeRequests
-                                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/email/verify").permitAll()
-                                        .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/api/v1/products").permitAll()
+                .formLogin(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(request -> request
+                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/auth/email/verify").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/products").permitAll()
+                .anyRequest().authenticated()
+        );
+        http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 //                                .requestMatchers("/admins/**").hasAuthority("ADMIN")
-                                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(tokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -50,9 +46,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    TokenAuthenticationFilter tokenAuthenticationFilter(TokenProvider tokenProvider) {
-        return new TokenAuthenticationFilter(tokenProvider, redisService);
-    }
 
 }

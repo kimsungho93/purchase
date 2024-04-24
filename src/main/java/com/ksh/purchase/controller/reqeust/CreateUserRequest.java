@@ -47,6 +47,7 @@ public record CreateUserRequest(
                 .phone(phone)
                 .userType(UserType.valueOf(userType))
                 .addressList(new ArrayList<>())
+                .productList(new ArrayList<>())
                 .build();
     }
 

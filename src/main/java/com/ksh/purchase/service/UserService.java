@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
+import static com.ksh.purchase.util.EncryptionUtil.*;
 import static com.ksh.purchase.util.EncryptionUtil.passwordEncoder;
 
 @Service
@@ -81,41 +82,41 @@ public class UserService {
 
     // Private helper methods
     private void validateDuplicateEmail(String email) {
-        if (userRepository.existsByEmail(EncryptionUtil.encrypt(email))) {
+        if (userRepository.existsByEmail(encrypt(email))) {
             throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
         }
     }
 
     private User saveNewUser(CreateUserRequest request) {
-        User user = EncryptionUtil.encryptUser(request.toUserEntity());
+        User user = encryptUser(request.toUserEntity());
         userRepository.save(user);
         redisService.setValue(String.valueOf(user.getId()), String.valueOf(user.getId()), Duration.ofMinutes(2));
         return user;
     }
 
     private void saveNewAddress(User user, CreateUserRequest request) {
-        Address address = EncryptionUtil.encryptAddress(request.toAddressEntity(user));
+        Address address = encryptAddress(request.toAddressEntity(user));
         address.setUser(user);
         addressRepository.save(address);
     }
 
     private User validateUserCredentials(String email, String password) {
-        User user = userRepository.findByEmail(EncryptionUtil.encrypt(email))
-                .orElseThrow(() -> new CustomException(ErrorCode.MAIL_NOT_FOUND));
+        User user = userRepository.findByEmail(encrypt(email))
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
         return user;
     }
 
-    private User findUserById(Long id) {
+    public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException("회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
     }
 
     private void updatePhone(User user, String phone) {
-        if (!phone.isEmpty() && !phone.equals(EncryptionUtil.decrypt(user.getPhone()))) {
-            user.setPhone(EncryptionUtil.encrypt(phone));
+        if (!phone.isEmpty() && !phone.equals(decrypt(user.getPhone()))) {
+            user.setPhone(encrypt(phone));
         }
     }
 
@@ -123,13 +124,13 @@ public class UserService {
         Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ADDRESS_NOT_FOUND));
         if (!request.zipcode().isEmpty()) {
-            address.setZipcode(EncryptionUtil.encrypt(request.zipcode()));
+            address.setZipcode(encrypt(request.zipcode()));
         }
         if (!request.address().isEmpty()) {
-            address.setAddress(EncryptionUtil.encrypt(request.address()));
+            address.setAddress(encrypt(request.address()));
         }
         if (!request.detailedAddress().isEmpty()) {
-            address.setDetailedAddress(EncryptionUtil.encrypt(request.detailedAddress()));
+            address.setDetailedAddress(encrypt(request.detailedAddress()));
         }
     }
 

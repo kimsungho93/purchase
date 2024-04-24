@@ -56,8 +56,7 @@ public class TokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-
-        return new UsernamePasswordAuthenticationToken(claims.get("email", String.class), token, authorities);
+        return new UsernamePasswordAuthenticationToken(claims.get("id", String.class), null, authorities);
     }
 
     public Long getUserIdFromToken(Authentication authentication) {

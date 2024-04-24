@@ -3,9 +3,14 @@ package com.ksh.purchase.entity;
 import com.ksh.purchase.entity.enums.UserType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Entity
@@ -51,4 +56,13 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean isWithdrawal;
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<UserType> authorities = List.of(this.getUserType());
+        return authorities.stream()
+                .map(type -> new SimpleGrantedAuthority(type.name()))
+                .collect(Collectors.toList());
+    }
+
+
 }

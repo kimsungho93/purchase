@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -52,10 +54,9 @@ public class UserController {
     // 주소, 전화번호 변경
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateAddressAndPhone(
-            @RequestHeader("Authorization") String token,
+            @AuthenticationPrincipal User user,
             @PathVariable Long id,
             @Valid @RequestBody UserInfoUpdateRequest request) {
-        checkToken(token, id);
         userService.updateAddressAndPhone(id, request);
         return ResponseEntity.ok().build();
     }

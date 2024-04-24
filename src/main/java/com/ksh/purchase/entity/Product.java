@@ -20,7 +20,9 @@ public class Product extends BaseEntity{
     private Long id;
     @Column(name = "product_name", nullable = false)
     private String name;
+    @Column(nullable = false)
     private int price;
+    @Column(nullable = false, columnDefinition = "int default 0")
     private int stock;
     @Column(length = 500, nullable = false)
     private String description;
@@ -30,5 +32,11 @@ public class Product extends BaseEntity{
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'SALE'")
     private ProductStatus status;
+
+    public void setUser(User user) {
+        this.user = user;
+        this.getUser().getProductList().add(this);
+    }
 }

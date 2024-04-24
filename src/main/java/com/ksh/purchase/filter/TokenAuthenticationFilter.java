@@ -1,7 +1,9 @@
 package com.ksh.purchase.filter;
 
+import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
+import com.ksh.purchase.repository.UserRepository;
 import com.ksh.purchase.service.RedisService;
 import com.ksh.purchase.service.TokenProvider;
 import jakarta.servlet.FilterChain;
@@ -9,8 +11,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,17 +23,15 @@ import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Component
+@Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
     private final RedisService redisService;
-
+    private final UserRepository userRepository;
     private final static String TOKEN_PREFIX = "Bearer ";
     private static final List<String> openApiEndpoints = List.of(
-            "/api/v1/users",                              // 회원가입
-            "/api/v1/auth/email/verify",            // 이메일 인증
-            "/api/v1/users/login",                     // 로그인
-            "/h2-console/**",                           // H2 콘솔
-            "/api/v1/products"                         // 상품 목록 조회
+            "/h2-console/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -53,7 +55,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         validateAuthorizationHeader(authorizationHeader);
 
         final String token = extractToken(authorizationHeader);
-        if (tokenProvider.validateToken(token) &&  redisService.hasKey(token)) { // 이 부분 추가
+        if (tokenProvider.validateToken(token) && redisService.hasKey(token)) { // 이 부분 추가
             setAuthentication(token);
         } else {
             throw new CustomException(ErrorCode.INVALID_TOKEN);
@@ -74,7 +76,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     // SecurityContext에 인증 정보 등록
     private void setAuthentication(String token) {
-        Authentication authentication = tokenProvider.getAuthentication(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Long userId = tokenProvider.getUserIdFromToken(token);
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        org.springframework.security.core.userdetails.User user =
+                new org.springframework.security.core.userdetails.User(findUser.getId().toString(), findUser.getPassword(), findUser.getAuthorities());
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                UsernamePasswordAuthenticationToken.authenticated(user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 }
