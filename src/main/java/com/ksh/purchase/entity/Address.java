@@ -1,15 +1,12 @@
 package com.ksh.purchase.entity;
 
-import com.ksh.purchase.controller.reqeust.CreateUserRequest;
-import com.ksh.purchase.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.http.HttpStatus;
 
 @Entity
 @Table(name = "address")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Address extends BaseEntity{
