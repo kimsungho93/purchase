@@ -38,7 +38,7 @@ public class ProductController {
     }
 
     // 상품 단 건 조회
-    @GetMapping("/api/v1//{id}")
+    @GetMapping("/api/v1/products/{id}")
     public ResponseEntity<ProductResponse> getProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProduct(id));
     }

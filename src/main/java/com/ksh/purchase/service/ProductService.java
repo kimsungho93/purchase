@@ -4,6 +4,7 @@ import com.ksh.purchase.controller.reqeust.CreateProductRequest;
 import com.ksh.purchase.controller.response.ProductResponse;
 import com.ksh.purchase.entity.Product;
 import com.ksh.purchase.entity.User;
+import com.ksh.purchase.entity.enums.ProductStatus;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.ProductRepository;
@@ -36,7 +37,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<ProductResponse> getProducts(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return productRepository.findAll(pageRequest).stream()
+        return productRepository.findAllByStatus(pageRequest, ProductStatus.SALE).stream()
                 .map(ProductResponse::from)
                 .toList();
     }

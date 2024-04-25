@@ -54,6 +54,12 @@ public class UserService {
         redisService.deleteValue(token);
     }
 
+    @Transactional(readOnly = true)
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
     // 이메일 인증
     @Transactional
     public void verifyEmail(Long id) {

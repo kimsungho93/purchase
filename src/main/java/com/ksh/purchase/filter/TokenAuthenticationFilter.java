@@ -3,9 +3,9 @@ package com.ksh.purchase.filter;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
-import com.ksh.purchase.repository.UserRepository;
 import com.ksh.purchase.service.RedisService;
 import com.ksh.purchase.service.TokenProvider;
+import com.ksh.purchase.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,33 +20,40 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
+    private final UserService userService;
     private final RedisService redisService;
-    private final UserRepository userRepository;
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private static final List<String> openApiEndpoints = List.of(
-            "/h2-console/**"
-    );
 
+    private final static String TOKEN_PREFIX = "Bearer ";
+    private static final Map<String, String> openApiEndpoints = Map.of(
+            "/h2-console/**", "GET",
+            "/api/v1/auth/email/verify", "GET",
+            "/api/v1/users/login", "POST",
+            "/api/v1/products", "GET"
+    );
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (shouldFilter(request.getRequestURI())) {
-            processAuthentication(request);
+        if (!shouldFilter(request.getRequestURI(), request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
         }
+        processAuthentication(request);
         filterChain.doFilter(request, response);
     }
 
     // 요청 URI가 공개 API에 해당하는지 확인
-    private boolean shouldFilter(String requestURI) {
-        return openApiEndpoints.stream().noneMatch(uri -> pathMatcher.match(uri, requestURI));
+    private boolean shouldFilter(String requestURI, String method) {
+        return openApiEndpoints.entrySet().stream()
+                .noneMatch(entry -> pathMatcher.match(entry.getKey(), requestURI) && entry.getValue().equals(method));
+
     }
 
     // 인증 처리 로직
@@ -77,8 +84,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     // SecurityContext에 인증 정보 등록
     private void setAuthentication(String token) {
         Long userId = tokenProvider.getUserIdFromToken(token);
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User findUser = userService.findById(userId);
         org.springframework.security.core.userdetails.User user =
                 new org.springframework.security.core.userdetails.User(findUser.getId().toString(), findUser.getPassword(), findUser.getAuthorities());
 
