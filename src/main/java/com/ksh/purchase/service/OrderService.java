@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,9 @@ public class OrderService {
     // 주문 목록 조회
     public List<OrderResponse> getOrders(long userId) {
         User user = userService.findById(userId);
-        return user.getOrderList().stream().map(OrderResponse::from).collect(Collectors.toList());
+        return user.getOrderList().stream()
+                .sorted(Comparator.comparing(Order::getCreatedAt).reversed())
+                .map(OrderResponse::from)
+                .collect(Collectors.toList());
     }
 }
