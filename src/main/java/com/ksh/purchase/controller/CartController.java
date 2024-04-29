@@ -1,8 +1,6 @@
 package com.ksh.purchase.controller;
 
 import com.ksh.purchase.controller.reqeust.CartAddItemRequest;
-import com.ksh.purchase.controller.reqeust.CartItemDeleteRequest;
-import com.ksh.purchase.controller.reqeust.CartProductIdRequest;
 import com.ksh.purchase.controller.reqeust.CartQuantityUpdateRequest;
 import com.ksh.purchase.controller.response.CartAddItemResponse;
 import com.ksh.purchase.controller.response.CartProductResponse;
@@ -15,7 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -28,7 +25,7 @@ public class CartController {
     @PostMapping("/api/v1/carts")
     public ResponseEntity<CartAddItemResponse> addItemToCart(@AuthenticationPrincipal User user, @Valid @RequestBody CartAddItemRequest request) {
         String userId = user.getUsername();
-        return ResponseEntity.ok().body(cartService.addItemtoCart(userId, request));
+        return ResponseEntity.ok().body(cartService.addItemToCart(userId, request));
     }
 
     // 장바구니 조회
@@ -40,9 +37,9 @@ public class CartController {
 
     // 장바구니에서 상품 선택 바꾸기
     @PostMapping("/api/v1/carts/check")
-    public ResponseEntity<?> checkItemFromCart(@AuthenticationPrincipal User user, @RequestBody List<CartProductIdRequest> cartProductIds) {
+    public ResponseEntity<Void> checkItemFromCart(@AuthenticationPrincipal User user, @RequestBody Long cartProductIds) {
         String userId = user.getUsername();
-        cartService.checkItemFromCart(userId, cartProductIds);
+        cartService.toggleCartItemSelection(userId, cartProductIds);
         return ResponseEntity.ok().build();
     }
 
@@ -56,9 +53,9 @@ public class CartController {
 
     // 장바구니에서 선택된 상품만 삭제(여러개)
     @DeleteMapping("/api/v1/carts/checked")
-    public ResponseEntity<Void> deleteCheckedItemsFromCart(@AuthenticationPrincipal User user, @RequestBody List<CartItemDeleteRequest> cartProductIds) {
+    public ResponseEntity<Void> deleteCheckedItemsFromCart(@AuthenticationPrincipal User user) {
         String userId = user.getUsername();
-        cartService.deleteCheckedItemsFromCart(userId, cartProductIds);
+        cartService.deleteSelectedItemsFromCart(userId);
         return ResponseEntity.ok().build();
     }
 
@@ -70,13 +67,11 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-
     // 수량 변경
     @PostMapping(value = "/api/v1/carts/change-quantity")
     public ResponseEntity<CartProductResponse> updateQuantity(@AuthenticationPrincipal User user, @Valid @RequestBody CartQuantityUpdateRequest request) {
         String userId = user.getUsername();
         return ResponseEntity.ok().body(cartService.updateQuantity(userId, request));
     }
-
 
 }

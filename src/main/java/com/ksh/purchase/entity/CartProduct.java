@@ -41,6 +41,7 @@ public class CartProduct implements Serializable {
     private boolean deleted = false;
 
     @CreatedDate
+    @Setter
     private LocalDateTime createdAt;
 
     public  void updateQuantity(int quantity) {
