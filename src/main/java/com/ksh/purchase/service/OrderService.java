@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -37,5 +38,11 @@ public class OrderService {
         Order saved = orderRepository.save(Order.createOrder(user, orderProducts));
         orderProducts.forEach(orderProduct -> orderProduct.setOrder(saved));
         return OrderResponse.from(saved);
+    }
+
+    // 주문 목록 조회
+    public List<OrderResponse> getOrders(long userId) {
+        User user = userService.findById(userId);
+        return user.getOrderList().stream().map(OrderResponse::from).collect(Collectors.toList());
     }
 }

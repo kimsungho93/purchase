@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,15 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(@AuthenticationPrincipal User user, @Valid @RequestBody List<CreateOrderRequest> request) {
         long userId = Long.parseLong(user.getUsername());
         return ResponseEntity.ok(orderService.createOrder(userId, request));
+    }
+
+    // 주문 취소(상품 재고 복구)
+
+    // 주문 목록 조회
+    @GetMapping("/api/v1/orders")
+    public ResponseEntity<List<OrderResponse>> getOrders(@AuthenticationPrincipal User user) {
+        long userId = Long.parseLong(user.getUsername());
+        return ResponseEntity.ok().body(orderService.getOrders(userId));
     }
 
 }
