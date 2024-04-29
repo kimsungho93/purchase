@@ -32,7 +32,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final static String TOKEN_PREFIX = "Bearer ";
     private static final Map<String, String> openApiEndpoints = Map.of(
-            "/h2-console/**", "GET",
             "/api/v1/auth/email/verify", "GET",
             "/api/v1/users/login", "POST",
             "/api/v1/products", "GET"
@@ -41,6 +40,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("doFilterInternal");
+        log.info("requestURI: {}", request.getRequestURI());
+        if (request.getRequestURI().contains("/h2-console")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (!shouldFilter(request.getRequestURI(), request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
@@ -51,6 +56,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     // 요청 URI가 공개 API에 해당하는지 확인
     private boolean shouldFilter(String requestURI, String method) {
+        log.info("requestURI: {}, method: {}", requestURI, method);
         return openApiEndpoints.entrySet().stream()
                 .noneMatch(entry -> pathMatcher.match(entry.getKey(), requestURI) && entry.getValue().equals(method));
 
@@ -58,6 +64,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     // 인증 처리 로직
     private void processAuthentication(HttpServletRequest request) {
+        log.info("processAuthentication");
         final String authorizationHeader = request.getHeader("Authorization");
         validateAuthorizationHeader(authorizationHeader);
 
@@ -83,6 +90,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     // SecurityContext에 인증 정보 등록
     private void setAuthentication(String token) {
+        log.info("setAuthentication");
         Long userId = tokenProvider.getUserIdFromToken(token);
         User findUser = userService.findById(userId);
         org.springframework.security.core.userdetails.User user =

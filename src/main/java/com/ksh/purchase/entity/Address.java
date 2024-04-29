@@ -3,6 +3,8 @@ package com.ksh.purchase.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.ksh.purchase.util.EncryptionUtil.*;
+
 @Entity
 @Table(name = "address")
 @Getter
@@ -29,9 +31,17 @@ public class Address extends BaseEntity{
     @Setter
     private String detailedAddress;
 
+    @Column(nullable = false)
+    private boolean selected;
+
     public void setUser(User user) {
         this.user = user;
         this.getUser().getAddressList().add(this);
+    }
+
+    // 풀 주소
+    public String getFullAddress() {
+        return String.format("(%s) %s %s", decrypt(zipcode), decrypt(address), decrypt(detailedAddress));
     }
 
 }

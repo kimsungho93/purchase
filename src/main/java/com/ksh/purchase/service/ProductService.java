@@ -1,6 +1,7 @@
 package com.ksh.purchase.service;
 
 import com.ksh.purchase.controller.reqeust.CreateProductRequest;
+import com.ksh.purchase.controller.reqeust.OrderProductDTO;
 import com.ksh.purchase.controller.response.ProductResponse;
 import com.ksh.purchase.entity.Product;
 import com.ksh.purchase.entity.User;
@@ -48,5 +49,16 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
         return ProductResponse.from(product);
+    }
+
+    public List<Product> findByIdIn(List<OrderProductDTO> ids) {
+        return productRepository.findByIdIn(ids.stream()
+                .map(OrderProductDTO::productId)
+                .toList());
+    }
+
+    public Product findBtyId(Long productId) {
+        return productRepository.findById(productId).orElseThrow(
+                () -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 }

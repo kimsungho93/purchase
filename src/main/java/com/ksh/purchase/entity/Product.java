@@ -1,6 +1,8 @@
 package com.ksh.purchase.entity;
 
 import com.ksh.purchase.entity.enums.ProductStatus;
+import com.ksh.purchase.exception.CustomException;
+import com.ksh.purchase.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,5 +37,19 @@ public class Product extends BaseEntity{
     public void setUser(User user) {
         this.user = user;
         this.getUser().getProductList().add(this);
+    }
+
+    // 재고 차감
+    public void minusStock(int quantity) {
+        int restStock = this.stock - quantity;
+        if (restStock < 0) {
+            throw new CustomException(ErrorCode.PRODUCT_STOCK_LACK);
+        }
+        this.stock = restStock;
+    }
+
+    // 재고 증가
+    public void plusStock(int count) {
+        this.stock += count;
     }
 }

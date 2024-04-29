@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ProductResponse {
+    private Long id;
     private String name;
     private int price;
     private String description;
@@ -18,6 +19,7 @@ public class ProductResponse {
 
     public static ProductResponse from(Product product) {
         return ProductResponse.builder()
+                .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
                 .description(product.getDescription())

@@ -57,6 +57,7 @@ public record CreateUserRequest(
                 .zipcode(zipcode)
                 .address(address)
                 .detailedAddress(detailedAddress)
+                .selected(true)
                 .build();
     }
 

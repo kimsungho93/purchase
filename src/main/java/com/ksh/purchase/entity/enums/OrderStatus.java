@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    BEFORE_DELIVERY("배송 전"),
+    ORDER_COMPLETE("주문 완료"),
     DELIVERY("배송 중"),
-    COMPLETE("배송 완료");
+    DELIVERY_COMPLETE("배송 완료");
 
     private final String description;
 

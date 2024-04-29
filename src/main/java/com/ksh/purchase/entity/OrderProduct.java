@@ -1,15 +1,12 @@
 package com.ksh.purchase.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "order_products")
+@Table(name = "order_product")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class OrderProduct extends BaseEntity{
@@ -19,7 +16,8 @@ public class OrderProduct extends BaseEntity{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
+    @Setter
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -28,5 +26,13 @@ public class OrderProduct extends BaseEntity{
 
     @Column(nullable = false)
     private int quantity;
+
+    public static OrderProduct createOrderProduct(Product product, int quantity) {
+        return OrderProduct.builder()
+                .order(null)
+                .product(product)
+                .quantity(quantity)
+                .build();
+    }
 
 }
