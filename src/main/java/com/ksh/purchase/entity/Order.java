@@ -1,6 +1,5 @@
 package com.ksh.purchase.entity;
 
-import com.ksh.purchase.controller.reqeust.CreateOrderRequest;
 import com.ksh.purchase.entity.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +12,8 @@ import static com.ksh.purchase.util.OrderNumberGenerator.createOrderNumber;
 
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+        @Index(name = "idx_order_status", columnList = "status")})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

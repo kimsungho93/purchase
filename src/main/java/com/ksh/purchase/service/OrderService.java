@@ -24,6 +24,7 @@ public class OrderService {
     private final ProductService productService;
     private final OrderRepository orderRepository;
 
+    // 주문 하기
     @Transactional
     public OrderResponse createOrder(long userId, List<CreateOrderRequest> request) {
         User user = userService.findById(userId);
