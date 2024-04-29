@@ -12,6 +12,7 @@ import com.ksh.purchase.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -25,6 +26,7 @@ public class CartService {
     private final ProductService productService;
 
     // 상품을 장바구니에 추가
+    @Transactional
     public CartAddItemResponse addItemToCart(String userId, CartAddItemRequest request) {
         User user = userService.findById(Long.parseLong(userId));
         Product product = productService.findBtyId(request.productId());
@@ -35,6 +37,7 @@ public class CartService {
     }
 
     // 장바구니 조회
+    @Transactional(readOnly = true)
     public Set<CartProductResponse> getCart(String userId) {
         User user = userService.findById(Long.parseLong(userId));
         return user.getCart().getCartProducts().stream()
@@ -44,6 +47,7 @@ public class CartService {
     }
 
     // 장바구니 상품 삭제 (단일)
+    @Transactional
     public void deleteItemFromCart(String userId, Long cartProductId) {
         User user = userService.findById(Long.parseLong(userId));
         CartProduct cartProduct = findCartProduct(user, cartProductId);
@@ -52,6 +56,7 @@ public class CartService {
     }
 
     // 장바구니 상품 삭제 (선택된 상품들)
+    @Transactional
     public void deleteSelectedItemsFromCart(String userId) {
         User user = userService.findById(Long.parseLong(userId));
         user.getCart().getCartProducts().stream()
@@ -61,6 +66,7 @@ public class CartService {
     }
 
     // 장바구니 전체 상품 삭제
+    @Transactional
     public void deleteAllItemsFromCart(String userId) {
         User user = userService.findById(Long.parseLong(userId));
         user.getCart().getCartProducts().forEach(this::markProductAsDeleted);
@@ -68,6 +74,7 @@ public class CartService {
     }
 
     // 장바구니 상품 수량 변경
+    @Transactional
     public CartProductResponse updateQuantity(String userId, CartQuantityUpdateRequest request) {
         User user = userService.findById(Long.parseLong(userId));
         CartProduct cartProduct = findCartProduct(user, request.cartProductId());
@@ -77,6 +84,7 @@ public class CartService {
     }
 
     // 장바구니 상품 선택 토글
+    @Transactional
     public void toggleCartItemSelection(String userId, Long cartProductId) {
         User user = userService.findById(Long.parseLong(userId));
         CartProduct cartProduct = findCartProduct(user, cartProductId);
