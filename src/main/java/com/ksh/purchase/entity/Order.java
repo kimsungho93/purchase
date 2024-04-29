@@ -42,6 +42,7 @@ public class Order extends BaseEntity implements Serializable {
     private int totalPrice;
 
     @Enumerated(EnumType.STRING)
+    @Setter
     private OrderStatus status;
 
     public static Order createOrder(User user, List<OrderProduct> orderProducts) {

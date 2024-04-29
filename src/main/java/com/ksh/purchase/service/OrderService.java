@@ -6,6 +6,7 @@ import com.ksh.purchase.entity.Order;
 import com.ksh.purchase.entity.OrderProduct;
 import com.ksh.purchase.entity.Product;
 import com.ksh.purchase.entity.User;
+import com.ksh.purchase.entity.enums.OrderStatus;
 import com.ksh.purchase.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -42,12 +44,23 @@ public class OrderService {
         return OrderResponse.from(saved);
     }
 
-    // 주문 목록 조회
+    // 주문 목록 조회(회원 아이디)
     public List<OrderResponse> getOrders(long userId) {
         User user = userService.findById(userId);
         return user.getOrderList().stream()
                 .sorted(Comparator.comparing(Order::getCreatedAt).reversed())
                 .map(OrderResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    // 주문 목록 조회(주문 상태)
+    public List<Order> getOrdersByStatus(OrderStatus status) {
+        return Optional.ofNullable(orderRepository.findByStatus(status))
+                .filter(orders -> !orders.isEmpty())
+                .orElse(new ArrayList<>());
+    }
+
+    public void saveAll(List<Order> orders) {
+        orderRepository.saveAll(orders);
     }
 }
