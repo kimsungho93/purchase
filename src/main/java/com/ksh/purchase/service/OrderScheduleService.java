@@ -23,14 +23,16 @@ public class OrderScheduleService {
 
     @Scheduled(fixedRate =  1000 * 60 * 60 * 2, initialDelay = 1000 * 60) // 2시간마다 실행
     public void updateOrderStatusToDelivery() {
+        log.info("배송 중 상태 변경");
         LocalDateTime now = LocalDateTime.now();
         List<Order> ordersToBeDelivered = orderService.getOrdersByStatus(ORDER_COMPLETE);
         List<Order> ordersUpdatedToDelivery = updateOrdersToDelivery(ordersToBeDelivered, now);
         saveUpdatedOrders(ordersUpdatedToDelivery);
     }
 
-    @Scheduled(fixedRate =  1000 * 60 * 60 * 2, initialDelay = 1000 * 60) // 3시간마다 실행
+    @Scheduled(fixedRate =  1000 * 60 * 60 * 2, initialDelay = 1000 * 60) // 2시간마다 실행
     public void updateOrderStatusToDeliveryComplete() {
+        log.info("배송 완료 상태 변경");
         LocalDateTime now = LocalDateTime.now();
         List<Order> ordersToBeCompleted = orderService.getOrdersByStatus(DELIVERY);
         List<Order> ordersUpdatedToDeliveryComplete = updateOrdersToDeliveryComplete(ordersToBeCompleted, now);

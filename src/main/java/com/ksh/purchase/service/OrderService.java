@@ -1,12 +1,15 @@
 package com.ksh.purchase.service;
 
 import com.ksh.purchase.controller.reqeust.CreateOrderRequest;
+import com.ksh.purchase.controller.response.OrderCancelResponse;
 import com.ksh.purchase.controller.response.OrderResponse;
 import com.ksh.purchase.entity.Order;
 import com.ksh.purchase.entity.OrderProduct;
 import com.ksh.purchase.entity.Product;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.entity.enums.OrderStatus;
+import com.ksh.purchase.exception.CustomException;
+import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,18 @@ public class OrderService {
         return OrderResponse.from(saved);
     }
 
+    // 주문 취소
+    @Transactional
+    public OrderCancelResponse cancelOrder(long userId, long orderId) {
+        User user = userService.findById(userId);
+        Order order = user.getOrderList().stream()
+                .filter(o -> o.getId() == orderId)
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        order.cancel();
+        return OrderCancelResponse.of(order);
+    }
+
     // 주문 목록 조회(회원 아이디)
     public List<OrderResponse> getOrders(long userId) {
         User user = userService.findById(userId);
@@ -63,4 +78,6 @@ public class OrderService {
     public void saveAll(List<Order> orders) {
         orderRepository.saveAll(orders);
     }
+
+
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum OrderStatus {
     ORDER_COMPLETE("주문 완료"),
+    CANCEL("주문 취소"),
     DELIVERY("배송 중"),
     DELIVERY_COMPLETE("배송 완료");
 

@@ -24,6 +24,10 @@ public enum ErrorCode {
     CART_ALREADY_EXIST("이미 장바구니에 담긴 상품입니다.", BAD_REQUEST),
     PRODUCT_NOT_IN_CART("장바구니에 담긴 상품이 아닙니다.", BAD_REQUEST),
     CART_IS_EMPTY("장바구니가 비어있습니다.", BAD_REQUEST),
+    // 주문 관련
+    ORDER_NOT_FOUND("주문을 찾을 수 없습니다.", NOT_FOUND),
+    ORDER_ALREADY_CANCEL("이미 취소된 주문입니다.", BAD_REQUEST),
+    ORDER_CANNOT_CANCEL("취소할 수 없는 주문입니다.", BAD_REQUEST),
     // 메일 관련
     MAIL_SEND_ERROR("메일 전송에 실패했습니다.", INTERNAL_SERVER_ERROR),
     //암호화 관련
