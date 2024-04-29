@@ -39,4 +39,11 @@ public class Cart implements Serializable {
         cartProduct.setCart(this);
     }
 
+    public int getTotalPrice() {
+        return cartProducts.stream()
+                .filter(CartProduct::isChecked)
+                .mapToInt(cartProduct -> cartProduct.getProduct().getPrice() * cartProduct.getQuantity())
+                .sum();
+    }
+
 }

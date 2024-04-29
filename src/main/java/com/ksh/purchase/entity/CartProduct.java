@@ -33,7 +33,12 @@ public class CartProduct implements Serializable {
     private int quantity;
 
     @Column(nullable = false, columnDefinition = "boolean default true")
+    @Setter
     private boolean checked = true;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Setter
+    private boolean deleted = false;
 
     @CreatedDate
     private LocalDateTime createdAt;
