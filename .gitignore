@@ -42,3 +42,6 @@ docker-compose.override.yml
 
 application-test.yml
 /src/main/generated/
+
+/src/main/java/com/ksh/purchase/test/**
+/src/main/java/com/ksh/purchase/util/DataInitializer.java
