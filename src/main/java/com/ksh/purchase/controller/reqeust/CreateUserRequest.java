@@ -48,6 +48,8 @@ public record CreateUserRequest(
                 .userType(UserType.valueOf(userType))
                 .addressList(new ArrayList<>())
                 .productList(new ArrayList<>())
+                .orderList(new ArrayList<>())
+                .cart(null)
                 .build();
     }
 

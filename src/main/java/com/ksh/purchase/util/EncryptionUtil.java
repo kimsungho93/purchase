@@ -61,6 +61,9 @@ public class EncryptionUtil {
                 .phone(encrypt(u.getPhone()))
                 .userType(u.getUserType())
                 .addressList(new ArrayList<>())
+                .productList(new ArrayList<>())
+                .orderList(new ArrayList<>())
+                .certificated(u.isCertificated())
                 .build());
     }
 
@@ -69,6 +72,7 @@ public class EncryptionUtil {
                 .zipcode(encrypt(a.getZipcode()))
                 .address(encrypt(a.getAddress()))
                 .detailedAddress(encrypt(a.getDetailedAddress()))
+                .selected(a.isSelected())
                 .build());
     }
 

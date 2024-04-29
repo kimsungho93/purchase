@@ -34,6 +34,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private static final Map<String, String> openApiEndpoints = Map.of(
             "/api/v1/auth/email/verify", "GET",
             "/api/v1/users/login", "POST",
+            "/api/v1/users", "POST",
             "/api/v1/products", "GET"
     );
     private final AntPathMatcher pathMatcher = new AntPathMatcher();

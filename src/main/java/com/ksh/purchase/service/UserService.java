@@ -3,12 +3,13 @@ package com.ksh.purchase.service;
 import com.ksh.purchase.controller.reqeust.*;
 import com.ksh.purchase.controller.response.LoginResponse;
 import com.ksh.purchase.entity.Address;
+import com.ksh.purchase.entity.Cart;
+import com.ksh.purchase.entity.CartProduct;
 import com.ksh.purchase.entity.User;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.AddressRepository;
 import com.ksh.purchase.repository.UserRepository;
-import com.ksh.purchase.util.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import static com.ksh.purchase.util.EncryptionUtil.*;
 import static com.ksh.purchase.util.EncryptionUtil.passwordEncoder;
@@ -95,9 +98,17 @@ public class UserService {
 
     private User saveNewUser(CreateUserRequest request) {
         User user = encryptUser(request.toUserEntity());
-        userRepository.save(user);
+        User saved = userRepository.save(user);
         redisService.setValue(String.valueOf(user.getId()), String.valueOf(user.getId()), Duration.ofMinutes(2));
-        return user;
+        saved.setCart(
+                Cart.builder()
+                        .user(saved)
+                        .cartProducts(new TreeSet<>(Comparator.comparing(CartProduct::getCreatedAt)))
+                        .createdAt(user.getCreatedAt())
+                        .totalPrice(0)
+                        .build()
+        );
+        return saved;
     }
 
     private void saveNewAddress(User user, CreateUserRequest request) {
@@ -144,5 +155,9 @@ public class UserService {
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
     }
 }

@@ -20,6 +20,9 @@ public enum ErrorCode {
     // 상품 관련
     PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다.", NOT_FOUND),
     PRODUCT_STOCK_LACK("상품 재고가 부족합니다.", BAD_REQUEST),
+    // 장바구니 관련
+    CART_ALREADY_EXIST("이미 장바구니에 담긴 상품입니다.", BAD_REQUEST),
+    PRODUCT_NOT_IN_CART("장바구니에 담긴 상품이 아닙니다.", BAD_REQUEST),
     // 메일 관련
     MAIL_SEND_ERROR("메일 전송에 실패했습니다.", INTERNAL_SERVER_ERROR),
     //암호화 관련
