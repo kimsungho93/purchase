@@ -90,6 +90,19 @@ public class OrderService {
         eventPublisher.publishEvent(new OrderStatusChangeEvent(this, order));
     }
 
+    // 주문 상태 변경
+    @Transactional
+    public void changeOrderStatus(long userId, Long orderId, OrderStatus newStatus) {
+        User user = userService.findById(userId);
+        Order order = user.getOrderList().stream()
+                .filter(o -> o.getId() == orderId)
+                .findFirst()
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+        eventPublisher.publishEvent(new OrderStatusChangeEvent(this, order));
+    }
+
     public void saveAll(List<Order> orders) {
         orderRepository.saveAll(orders);
     }

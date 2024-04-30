@@ -1,8 +1,10 @@
 package com.ksh.purchase.controller;
 
 import com.ksh.purchase.controller.reqeust.CreateOrderRequest;
+import com.ksh.purchase.controller.reqeust.OrderStatusChangeRequest;
 import com.ksh.purchase.controller.response.OrderCancelResponse;
 import com.ksh.purchase.controller.response.OrderResponse;
+import com.ksh.purchase.entity.enums.OrderStatus;
 import com.ksh.purchase.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,4 +41,11 @@ public class OrderController {
         return ResponseEntity.ok().body(orderService.getOrders(userId));
     }
 
+    // 주문 상태 변경
+    @PatchMapping("/api/v1/orders/{orderId}/status")
+    public ResponseEntity<?> changeOrderStatus(@AuthenticationPrincipal User user, @PathVariable long orderId, @RequestBody OrderStatusChangeRequest request) {
+        long username = Long.parseLong(user.getUsername());
+        orderService.changeOrderStatus(username, orderId, OrderStatus.valueOf(request.status()));
+        return ResponseEntity.ok().build();
+    }
 }
