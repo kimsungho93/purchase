@@ -11,7 +11,9 @@ import com.ksh.purchase.entity.enums.OrderStatus;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.OrderRepository;
+import com.ksh.purchase.event.OrderStatusChangeEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final OrderRepository orderRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 주문 하기
     @Transactional
@@ -44,6 +47,7 @@ public class OrderService {
 
         Order saved = orderRepository.save(Order.createOrder(user, orderProducts));
         orderProducts.forEach(orderProduct -> orderProduct.setOrder(saved));
+        eventPublisher.publishEvent(new OrderStatusChangeEvent(this, saved));
         return OrderResponse.from(saved);
     }
 
@@ -56,6 +60,7 @@ public class OrderService {
                 .findFirst()
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
         order.cancel();
+        eventPublisher.publishEvent(new OrderStatusChangeEvent(this, order));
         return OrderCancelResponse.of(order);
     }
 
@@ -75,9 +80,18 @@ public class OrderService {
                 .orElse(new ArrayList<>());
     }
 
+    // 주문 상태 변경
+    @Transactional
+    public void changeOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+        eventPublisher.publishEvent(new OrderStatusChangeEvent(this, order));
+    }
+
     public void saveAll(List<Order> orders) {
         orderRepository.saveAll(orders);
     }
-
 
 }

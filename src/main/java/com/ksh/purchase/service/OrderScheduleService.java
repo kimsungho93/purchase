@@ -42,14 +42,14 @@ public class OrderScheduleService {
     private List<Order> updateOrdersToDelivery(List<Order> orders, LocalDateTime currentTime) {
         return orders.stream()
                 .filter(order -> Duration.between(order.getCreatedAt(), currentTime).toDays() >= 1)
-                .peek(order -> order.setStatus(DELIVERY))
+                .peek(order -> orderService.changeOrderStatus(order.getId(), DELIVERY))
                 .collect(Collectors.toList());
     }
 
     private List<Order> updateOrdersToDeliveryComplete(List<Order> orders, LocalDateTime currentTime) {
         return orders.stream()
                 .filter(order -> Duration.between(order.getCreatedAt(), currentTime).toDays() >= 2)
-                .peek(order -> order.setStatus(DELIVERY_COMPLETE))
+                .peek(order -> orderService.changeOrderStatus(order.getId(), DELIVERY_COMPLETE))
                 .collect(Collectors.toList());
     }
 
