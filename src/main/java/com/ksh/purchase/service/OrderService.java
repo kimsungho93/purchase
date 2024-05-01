@@ -1,17 +1,16 @@
 package com.ksh.purchase.service;
 
 import com.ksh.purchase.controller.reqeust.CreateOrderRequest;
+import com.ksh.purchase.controller.reqeust.RefundRequest;
 import com.ksh.purchase.controller.response.OrderCancelResponse;
 import com.ksh.purchase.controller.response.OrderResponse;
-import com.ksh.purchase.entity.Order;
-import com.ksh.purchase.entity.OrderProduct;
-import com.ksh.purchase.entity.Product;
-import com.ksh.purchase.entity.User;
+import com.ksh.purchase.entity.*;
 import com.ksh.purchase.entity.enums.OrderStatus;
 import com.ksh.purchase.exception.CustomException;
 import com.ksh.purchase.exception.ErrorCode;
 import com.ksh.purchase.repository.OrderRepository;
 import com.ksh.purchase.event.OrderStatusChangeEvent;
+import com.ksh.purchase.repository.RefundRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -103,8 +102,11 @@ public class OrderService {
         eventPublisher.publishEvent(new OrderStatusChangeEvent(this, order));
     }
 
+    public void save(Order order) {
+        orderRepository.save(order);
+    }
+
     public void saveAll(List<Order> orders) {
         orderRepository.saveAll(orders);
     }
-
 }

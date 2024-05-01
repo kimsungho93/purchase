@@ -2,7 +2,8 @@ package com.ksh.purchase.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Entity
 @Table(name = "order_product")
@@ -39,5 +40,4 @@ public class OrderProduct extends BaseEntity{
     public void cancel() {
         this.product.plusStock(this.quantity);
     }
-
 }

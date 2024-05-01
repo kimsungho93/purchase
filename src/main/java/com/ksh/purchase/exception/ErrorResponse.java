@@ -1,7 +1,6 @@
 package com.ksh.purchase.exception;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 

@@ -78,13 +78,13 @@ public class Order extends BaseEntity implements Serializable {
         this.products.forEach(OrderProduct::cancel);
     }
 
-    private static int getTotalPrice (List<OrderProduct> orderProducts) {
+    private static int getTotalPrice(List<OrderProduct> orderProducts) {
         return orderProducts.stream()
                 .mapToInt(orderProduct -> orderProduct.getProduct()
                         .getPrice() * orderProduct.getQuantity()).sum();
     }
 
-    private static Address getAddress (User user) {
+    private static Address getAddress(User user) {
         return user.getAddressList().stream().filter(Address::isSelected).findFirst().orElseThrow();
     }
 
@@ -92,5 +92,11 @@ public class Order extends BaseEntity implements Serializable {
         if (this.status != status) {
             this.status = status;
         }
+    }
+
+    public void refund(OrderProduct orderProduct) {
+        orderProduct.getProduct().plusStock(orderProduct.getQuantity());
+        this.getProducts().remove(orderProduct);
+        this.totalPrice -= orderProduct.getProduct().getPrice() * orderProduct.getQuantity();
     }
 }

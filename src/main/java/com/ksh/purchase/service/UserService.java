@@ -12,7 +12,6 @@ import com.ksh.purchase.repository.AddressRepository;
 import com.ksh.purchase.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +65,7 @@ public class UserService {
     // 이메일 인증
     @Transactional
     public void verifyEmail(Long id) {
-        User user = findUserById(id);
+        User user = findById(id);
         user.setCertificated(true);
         userRepository.save(user);
     }
@@ -74,7 +73,7 @@ public class UserService {
     // 주소, 전화번호 변경
     @Transactional
     public void updateAddressAndPhone(Long id, UserInfoUpdateRequest request) {
-        User user = findUserById(id);
+        User user = findById(id);
         updatePhone(user, request.phone());
         updateAddress(request.addressId(), request);
     }
@@ -82,14 +81,13 @@ public class UserService {
     // 비밀번호 변경
     @Transactional
     public void updatePassword(Long id, PasswordUpdateRequest request) {
-        User user = findUserById(id);
+        User user = findById(id);
         checkPasswordMatches(request, user);
         user.setPassword(passwordEncoder.encode(request.newPassword()));
     }
 
 
 
-    // Private helper methods
     private void validateDuplicateEmail(String email) {
         if (userRepository.existsByEmail(encrypt(email))) {
             throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
@@ -124,11 +122,6 @@ public class UserService {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
         return user;
-    }
-
-    public User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new CustomException("회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
     }
 
     private void updatePhone(User user, String phone) {

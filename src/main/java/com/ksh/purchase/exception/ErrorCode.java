@@ -28,6 +28,8 @@ public enum ErrorCode {
     ORDER_NOT_FOUND("주문을 찾을 수 없습니다.", NOT_FOUND),
     ORDER_ALREADY_CANCEL("이미 취소된 주문입니다.", BAD_REQUEST),
     ORDER_CANNOT_CANCEL("취소할 수 없는 주문입니다.", BAD_REQUEST),
+    ORDER_PRODUCT_NOT_FOUND("주문 상품을 찾을 수 없습니다.", NOT_FOUND),
+    ORDER_CANNOT_REFUND("환불할 수 없는 주문입니다.", BAD_REQUEST),
     // 메일 관련
     MAIL_SEND_ERROR("메일 전송에 실패했습니다.", INTERNAL_SERVER_ERROR),
     //암호화 관련
